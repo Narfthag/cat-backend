@@ -6,12 +6,10 @@ const Server = require('socket.io');
 const SimpleCat = require('./simpleCat.js')
 
 
-
-
-
 const App = express();
 const http = http_c.createServer(App);
-const PORT = 5000;
+
+const PORT = process.env.PORT || 5000;
 
 const io = new Server(http);
 
@@ -41,7 +39,7 @@ App.post('/login' , (req, res) => {
     // res.send({uuid: -1});
 });
 
-App.get('/ranking', (req, res) =>{
+App.get('/ranking', (req, res) => { 
 
 });
 
