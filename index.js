@@ -97,11 +97,11 @@ io.on('connection', (socket) => {
 
             let isFirstPlayerTurn = currentRoom.f_player.user == sendingPlayer;
             
-            if(isFirstPlayerTurn){
-                engine.firstPlayerTurn(col, row);
-            } else {
-                engine.secondPlayerTurn(col, row);
-            }
+            // if(isFirstPlayerTurn){
+            //     engine.firstPlayerTurn(col, row);
+            // } else {
+            //     engine.secondPlayerTurn(col, row);
+            // }
 
             currentRoom.f_player.user_socket.emit("play-move", { col: turnPlayer.col, row: turnPlayer.row});
             currentRoom.s_player.user_socket.emit("play-move", { col: turnPlayer.col, row: turnPlayer.row});
