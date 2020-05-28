@@ -66,4 +66,4 @@ function SimpleCat(){
     this.restart();
 }
 
-export default SimpleCat;
+module.exports = SimpleCat;
