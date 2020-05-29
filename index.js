@@ -73,7 +73,7 @@ io.on('connection', (socket) => {
             if(usersReadyPublic.length < 1){
                 usersReadyPublic.push({ user: data.u_id, user_socket: socket});
                 console.log(usersReadyPublic);
-                socket.emit('status-update', {'wait': false, 'message': 'Esperando partida', 'matchRoom': "Sin sala asignada"})
+                socket.emit('status-update', {'wait': true, 'message': 'Esperando partida', 'matchRoom': "Sin sala asignada"})
             } else {
                 // Creamos una room
                 let f_user = usersReadyPublic.shift();
@@ -83,7 +83,32 @@ io.on('connection', (socket) => {
                 f_user.user_socket.emit('new-match', {'wait': false, 'matchRoom': room.matchRoom, 'message': 'Es tu turno'});
                 s_user.user_socket.emit('new-match', {'wait': true, 'matchRoom': room.matchRoom, 'message': 'Es su turno'});
             }
+        } else if(data.type === 'create-private'){
+            let f_user = { user: data.u_id, user_socket: socket};
+            let s_user = null;
+            let room = createRoom(f_user, s_user);
+            allRooms[room.matchRoom] = room;
+            f_user.user_socket.emit('new-match', {'wait': true, 'matchRoom': room.matchRoom, 'message': 'Esperando Oponente'});
+            console.log(allRooms);
         }
+    });
+    socket.on('join-server', (data) => {
+        console.log(data);
+        const searchRoom = allRooms[data.room];
+        if(searchRoom !== undefined && searchRoom !== null){
+            if(searchRoom.s_player === null){
+                let s_user = { user: data.u_id, user_socket: socket};
+                searchRoom.s_player = s_user;
+                
+                searchRoom.f_player.user_socket.emit("unlock", {'wait': false,  'message': 'Es tu turno'});
+                s_user.user_socket.emit('new-match', {'wait': true, 'matchRoom': data.room, 'message': 'Es su turno'});
+            } else {
+                socket.emit('join-response', {text: 'Sala llena', error: true})
+            } 
+        } else {
+            socket.emit('join-response', {text: 'Sala no existe', error: true})
+        }
+        // /socket.emit('join-response', {text: 'Se recibio el dato'})
     });
     socket.on('turn-player', (turnPlayer) => {
         //console.log(turnPlayer);
